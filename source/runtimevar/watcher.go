@@ -5,8 +5,9 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/google/go-cloud/runtimevar"
+	"github.com/google/go-cloud/runtimevar/driver"
 	"github.com/samotarnik/go-config/source"
-	"gocloud.dev/runtimevar"
 )
 
 type watcher struct {
@@ -68,11 +69,11 @@ func (w *watcher) Stop() error {
 	}
 }
 
-func newWatcher(name string, v *runtimevar.Variable, opts source.Options) (source.Watcher, error) {
+func newWatcher(name string, dv driver.Watcher, opts source.Options) (source.Watcher, error) {
 	return &watcher{
 		name: name,
 		opts: opts,
 		exit: make(chan bool),
-		v:    v,
+		v:    runtimevar.New(dv),
 	}, nil
 }

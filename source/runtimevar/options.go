@@ -3,18 +3,18 @@ package runtimevar
 import (
 	"context"
 
+	"github.com/google/go-cloud/runtimevar/driver"
 	"github.com/samotarnik/go-config/source"
-	"gocloud.dev/runtimevar"
 )
 
-type variableKey struct{}
+type driverWatcherKey struct{}
 
-// WithVariable sets the runtimevar.Variable.
-func WithVariable(v *runtimevar.Variable) source.Option {
+// WithWatcher sets the runtimevar driver.Watcher
+func WithWatcher(dv driver.Watcher) source.Option {
 	return func(o *source.Options) {
 		if o.Context == nil {
 			o.Context = context.Background()
 		}
-		o.Context = context.WithValue(o.Context, variableKey{}, v)
+		o.Context = context.WithValue(o.Context, driverWatcherKey{}, dv)
 	}
 }

@@ -19,8 +19,6 @@ type consul struct {
 }
 
 var (
-	// DefaultPrefix is the prefix that consul keys will be assumed to have if you
-	// haven't specified one
 	DefaultPrefix = "/micro/config/"
 )
 
@@ -67,7 +65,6 @@ func (c *consul) Watch() (source.Watcher, error) {
 	return w, nil
 }
 
-// NewSource creates a new consul source
 func NewSource(opts ...source.Option) source.Source {
 	options := source.NewOptions(opts...)
 

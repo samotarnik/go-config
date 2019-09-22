@@ -1,4 +1,4 @@
-// package runtimevar is the source for gocloud.dev/runtimevar
+// package runtimevar is the source for github.com/google/go-cloud/runtimevar
 package runtimevar
 
 import (
@@ -6,15 +6,17 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/google/go-cloud/runtimevar"
+	"github.com/google/go-cloud/runtimevar/driver"
 	"github.com/samotarnik/go-config/source"
-	"gocloud.dev/runtimevar"
 )
 
 type rvSource struct {
 	opts source.Options
 
 	sync.Mutex
-	v *runtimevar.Variable
+	v  *runtimevar.Variable
+	dv driver.Watcher
 }
 
 func (rv *rvSource) Read() (*source.ChangeSet, error) {
@@ -41,7 +43,7 @@ func (rv *rvSource) Read() (*source.ChangeSet, error) {
 }
 
 func (rv *rvSource) Watch() (source.Watcher, error) {
-	return newWatcher(rv.String(), rv.v, rv.opts)
+	return newWatcher(rv.String(), rv.dv, rv.opts)
 }
 
 func (rv *rvSource) String() string {
@@ -51,14 +53,14 @@ func (rv *rvSource) String() string {
 func NewSource(opts ...source.Option) source.Source {
 	options := source.NewOptions(opts...)
 
-	v, ok := options.Context.Value(variableKey{}).(*runtimevar.Variable)
+	dv, ok := options.Context.Value(driverWatcherKey{}).(driver.Watcher)
 	if !ok {
 		// nooooooo
-		panic("runtimevar.Variable required")
+		panic("driver watcher required")
 	}
 
 	return &rvSource{
 		opts: options,
-		v:    v,
+		v:    runtimevar.New(dv),
 	}
 }
